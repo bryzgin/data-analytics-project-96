@@ -1,4 +1,4 @@
-/* формирование витрины last_paid_click */
+/* формирование last_paid_click */
 with query as (
     select
         s.visitor_id,
@@ -6,7 +6,6 @@ with query as (
         s.source as utm_source,
         s.medium as utm_medium,
         s.campaign as utm_campaign,
-        s.content as utm_content,
         row_number()
             over (
                 partition by s.visitor_id
@@ -28,10 +27,10 @@ select
     l.closing_reason,
     l.status_id
 from query as q
-left join leads as l
+inner join leads as l
     on
         q.visitor_id = l.visitor_id
-        and q.visit_date >= l.created_at
+        and q.visit_date <= l.created_at
 where q.visit_rank = 1
 order by
     l.amount desc nulls last,
