@@ -1,4 +1,4 @@
-/* формирование витрины last_paid_click.csv */
+/* формирование витрины last_paid_click */
 with query as (
     select
         s.visitor_id,
@@ -19,6 +19,7 @@ with query as (
 
 select
     q.visitor_id,
+    q.visit_date,
     q.utm_source,
     q.utm_medium,
     q.utm_campaign,
