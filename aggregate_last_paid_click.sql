@@ -2,7 +2,7 @@
 with query as (
     select
         s.visitor_id,
-        s.visit_date,
+       	s.visit_date,
         s.source as utm_source,
         s.medium as utm_medium,
         s.campaign as utm_campaign,
@@ -19,7 +19,7 @@ with query as (
 last_paid_click as (	
 	select
 	    q.visitor_id,
-	    q.visit_date,
+	    to_char(q.visit_date, 'DD-MM-YYYY') as visit_date,
 	    q.utm_source,
 	    q.utm_medium,
 	    q.utm_campaign,
@@ -28,7 +28,7 @@ last_paid_click as (
 	    l.closing_reason,
 	    l.status_id
 	from query as q
-	inner join leads as l
+	left join leads as l
 	    on
 	        q.visitor_id = l.visitor_id
 	        and q.visit_date <= l.created_at
@@ -43,27 +43,27 @@ last_paid_click as (
 
 ads as (
 	select
-		to_char(vk.campaign_date, 'yyyy-mm-dd') as campaign_date,
+		to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date,
 		vk.utm_source,
 		vk.utm_medium,
 		vk.utm_campaign,
 		sum(vk.daily_spent) as total_cost
 	from vk_ads as vk
 	group by 
-		to_char(vk.campaign_date, 'yyyy-mm-dd'),
+		to_char(vk.campaign_date, 'DD-MM-YYYY'),
 		vk.utm_source,
 		vk.utm_medium,
 		vk.utm_campaign
 	union
 		select
-		to_char(ya.campaign_date, 'yyyy-mm-dd') as campaign_date,
+		to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
 		ya.utm_source,
 		ya.utm_medium,
 		ya.utm_campaign,
 		sum(ya.daily_spent) as total_cost
 	from ya_ads as ya
 	group by 
-		to_char(ya.campaign_date, 'yyyy-mm-dd'),
+		to_char(ya.campaign_date, 'DD-MM-YYYY'),
 		ya.utm_source,
 		ya.utm_medium,
 		ya.utm_campaign
@@ -71,7 +71,7 @@ ads as (
 
 calc as (
 	select
-		to_char(lpc.visit_date, 'yyyy-mm-dd') as visit_date,
+		lpc.visit_date,
 		lpc.utm_source,
 		lpc.utm_medium,
 		lpc.utm_campaign,
@@ -84,7 +84,7 @@ calc as (
 		sum(lpc.amount) as revenue
 	from last_paid_click as lpc
 	group by
-		to_char(lpc.visit_date, 'yyyy-mm-dd'),
+		lpc.visit_date,
 		lpc.utm_source,
 		lpc.utm_medium,
 		lpc.utm_campaign

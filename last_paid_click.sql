@@ -18,16 +18,17 @@ with query as (
 
 select
     q.visitor_id,
-    q.visit_date,
+    to_char(q.visit_date, 'DD-MM-YYYY') as visit_date,
     q.utm_source,
     q.utm_medium,
     q.utm_campaign,
     l.lead_id,
+   to_char(l.created_at, 'DD-MM-YYYY') as created_at,
     l.amount,
     l.closing_reason,
     l.status_id
 from query as q
-inner join leads as l
+left join leads as l
     on
         q.visitor_id = l.visitor_id
         and q.visit_date <= l.created_at
