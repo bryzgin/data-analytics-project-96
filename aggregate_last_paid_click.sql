@@ -1,4 +1,4 @@
-/* агрегация из last_paid_click */
+/* Агрегация из last_paid_click для расчета расходов */
 with query as (
     select
         s.visitor_id,
@@ -113,5 +113,4 @@ order by
 	c.visitors_count desc,
 	c.utm_source asc,
 	c.utm_medium asc,
-	c.utm_campaign asc
-limit 15;
+	c.utm_campaign asc;

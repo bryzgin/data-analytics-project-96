@@ -1,4 +1,4 @@
-/* формирование last_paid_click */
+/* Формирование last_paid_click */
 with query as (
     select
         s.visitor_id,
@@ -38,5 +38,4 @@ order by
     q.visit_date asc,
     q.utm_source asc,
     q.utm_medium asc,
-    q.utm_campaign asc
-limit 10;
+    q.utm_campaign asc;
