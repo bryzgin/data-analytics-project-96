@@ -19,7 +19,7 @@ with query as (
 last_paid_click as (	
 	select
 	    q.visitor_id,
-	    to_char(q.visit_date, 'DD-MM-YYYY') as visit_date,
+	    to_char(q.visit_date, 'YYYY-MM-DD') as visit_date,
 	    q.utm_source,
 	    q.utm_medium,
 	    q.utm_campaign,
@@ -43,27 +43,27 @@ last_paid_click as (
 
 ads as (
 	select
-		to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date,
+		to_char(vk.campaign_date, 'YYYY-MM-DD') as campaign_date,
 		vk.utm_source,
 		vk.utm_medium,
 		vk.utm_campaign,
 		sum(vk.daily_spent) as total_cost
 	from vk_ads as vk
 	group by 
-		to_char(vk.campaign_date, 'DD-MM-YYYY'),
+		to_char(vk.campaign_date, 'YYYY-MM-DD'),
 		vk.utm_source,
 		vk.utm_medium,
 		vk.utm_campaign
 	union
 		select
-		to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
+		to_char(ya.campaign_date, 'YYYY-MM-DD') as campaign_date,
 		ya.utm_source,
 		ya.utm_medium,
 		ya.utm_campaign,
 		sum(ya.daily_spent) as total_cost
 	from ya_ads as ya
 	group by 
-		to_char(ya.campaign_date, 'DD-MM-YYYY'),
+		to_char(ya.campaign_date, 'YYYY-MM-DD'),
 		ya.utm_source,
 		ya.utm_medium,
 		ya.utm_campaign
@@ -113,4 +113,5 @@ order by
 	c.visitors_count desc,
 	c.utm_source asc,
 	c.utm_medium asc,
-	c.utm_campaign asc;
+	c.utm_campaign asc
+limit 15;
