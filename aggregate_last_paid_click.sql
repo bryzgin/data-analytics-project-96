@@ -92,10 +92,10 @@ calc as (
 
 select
 	c.visit_date,
+	c.visitors_count,
 	c.utm_source,
 	c.utm_medium,
 	c.utm_campaign,
-	c.visitors_count,
 	a.total_cost,
 	c.leads_count,
 	c.purchases_count,

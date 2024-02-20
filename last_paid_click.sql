@@ -18,12 +18,12 @@ with query as (
 
 select
     q.visitor_id,
-    to_char(q.visit_date, 'YYYY-MM-DD') as visit_date,
+   	q.visit_date as visit_date,
     q.utm_source,
     q.utm_medium,
     q.utm_campaign,
     l.lead_id,
-   to_char(l.created_at, 'YYYY-MM-DD') as created_at,
+  	l.created_at as created_at,
     l.amount,
     l.closing_reason,
     l.status_id
