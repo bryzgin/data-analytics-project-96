@@ -380,7 +380,7 @@ ads as (
         sum(vk.daily_spent) as total_cost,
         to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date
     from vk_ads as vk
-    group by 
+    group by
         vk.utm_source,
         vk.utm_medium,
         vk.utm_campaign,
@@ -391,9 +391,9 @@ ads as (
         ya.utm_medium,
         ya.utm_campaign,
         sum(ya.daily_spent) as total_cost,
-        to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
+        to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date
     from ya_ads as ya
-    group by 
+    group by
         ya.utm_source,
         ya.utm_medium,
         ya.utm_campaign
@@ -401,16 +401,16 @@ ads as (
 ),
 
 calc as (
-	select
-		lpc.visit_date,
-		lpc.utm_source,
-		lpc.utm_medium,
-		lpc.utm_campaign,
-		count(distinct lpc.visitor_id) as visitors_count,
-		count(distinct lpc.lead_id) as leads_count,
-		count(distinct lpc.lead_id) filter (
-			where lpc.closing_reason = 'Успешно реализовано'
-			or lpc.status_id = 142
+    select
+        lpc.visit_date,
+	lpc.utm_source,
+	lpc.utm_medium,
+	lpc.utm_campaign,
+	count(distinct lpc.visitor_id) as visitors_count,
+	count(distinct lpc.lead_id) as leads_count,
+	count(distinct lpc.lead_id) filter (
+	    where lpc.closing_reason = 'Успешно реализовано'
+	        or lpc.status_id = 142
 		) as purchases_count,
 		sum(lpc.amount) as revenue
 	from last_paid_click as lpc
