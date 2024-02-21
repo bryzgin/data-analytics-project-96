@@ -350,14 +350,14 @@ with query as (
 last_paid_click as (
     select
         q.visitor_id,
-	q.utm_source,
-	q.utm_medium,
-	q.utm_campaign,
-	l.lead_id,
-	l.amount,
-	l.closing_reason,
-	l.status_id,
-	to_char(q.visit_date, 'DD-MM-YYYY') as visit_date,
+        q.utm_source,
+        q.utm_medium,
+        q.utm_campaign,
+        l.lead_id,
+        l.amount,
+        l.closing_reason,
+        l.status_id,
+        to_char(q.visit_date, 'DD-MM-YYYY') as visit_date
     from query as q
     left join leads as l
         on
@@ -366,38 +366,38 @@ last_paid_click as (
     where q.visit_rank = 1
     order by
         l.amount desc nulls last,
-	q.visit_date asc,
-	q.utm_source asc,
-	q.utm_medium asc,
-	q.utm_campaign asc
+        q.visit_date asc,
+        q.utm_source asc,
+        q.utm_medium asc,
+        q.utm_campaign asc
 ),
 
 ads as (
-	select
-		vk.utm_source,
-		vk.utm_medium,
-		vk.utm_campaign,
-		sum(vk.daily_spent) as total_cost,
-		to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date
-	from vk_ads as vk
-	group by 
-		vk.utm_source,
-		vk.utm_medium,
-		vk.utm_campaign,
-		to_char(vk.campaign_date, 'DD-MM-YYYY')
-	union
-		select
-		ya.utm_source,
-		ya.utm_medium,
-		ya.utm_campaign,
-		sum(ya.daily_spent) as total_cost,
-		to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
-	from ya_ads as ya
-	group by 
-		ya.utm_source,
-		ya.utm_medium,
-		ya.utm_campaign
-		to_char(ya.campaign_date, 'DD-MM-YYYY')
+    select
+        vk.utm_source,
+        vk.utm_medium,
+        vk.utm_campaign,
+        sum(vk.daily_spent) as total_cost,
+        to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date
+    from vk_ads as vk
+    group by 
+        vk.utm_source,
+        vk.utm_medium,
+        vk.utm_campaign,
+        to_char(vk.campaign_date, 'DD-MM-YYYY')
+    union
+    select
+        ya.utm_source,
+        ya.utm_medium,
+        ya.utm_campaign,
+        sum(ya.daily_spent) as total_cost,
+        to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
+    from ya_ads as ya
+    group by 
+        ya.utm_source,
+        ya.utm_medium,
+        ya.utm_campaign
+        to_char(ya.campaign_date, 'DD-MM-YYYY')
 ),
 
 calc as (
