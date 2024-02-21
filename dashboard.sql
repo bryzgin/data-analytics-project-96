@@ -461,14 +461,14 @@ agg_metrics as (
 )
 
 select
-	utm_source,
-	visitors_count,
-	leads_count,
-	purchases_count,
-	total_cost,
-	revenue,
-	round(total_cost / visitors_count) as cpu,
-	round(total_cost / leads_count) as cpl,
-	round(total_cost / purchases_count) as cppu,
-	round(((revenue - total_cost) / total_cost * 100)) as roi
+    utm_source,
+    visitors_count,
+    leads_count,
+    purchases_count,
+    total_cost,
+    revenue,
+    round(total_cost / visitors_count) as cpu,
+    round(total_cost / leads_count) as cpl,
+    round(total_cost / purchases_count) as cppu,
+    round(((revenue - total_cost) / total_cost * 100)) as roi
 from agg_metrics;
