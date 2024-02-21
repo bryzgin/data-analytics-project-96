@@ -1,3 +1,44 @@
+/* Затраты на рекламу в динамике */
+with ads as (
+    select
+        to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date,
+        vk.utm_source,
+        vk.utm_medium,
+        vk.utm_campaign,
+        sum(vk.daily_spent) as total_cost
+    from vk_ads as vk
+    group by
+        to_char(vk.campaign_date, 'DD-MM-YYYY'),
+        vk.utm_source,
+        vk.utm_medium,
+        vk.utm_campaign
+    union
+    select
+        to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
+        ya.utm_source,
+        ya.utm_medium,
+        ya.utm_campaign,
+        sum(ya.daily_spent) as total_cost
+    from ya_ads as ya
+    group by
+        to_char(ya.campaign_date, 'DD-MM-YYYY'),
+        ya.utm_source,
+        ya.utm_medium,
+        ya.utm_campaign
+)
+
+select
+    utm_source,
+    campaign_date,
+    sum(total_cost) as total_cost
+from ads
+group by
+    campaign_date,
+    utm_source
+order by
+    utm_source,
+    campaign_date;
+
 /* Конверсия клика в лид */
 with ads as (
     select
