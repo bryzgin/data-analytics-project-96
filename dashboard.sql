@@ -197,3 +197,76 @@ select
     purchases_count,
     round(purchases_count / leads_count * 100, 2) as conv
 from lead_to_purchase;
+
+/* Корреляция компания - органика */
+with query as (
+    select
+        s.visitor_id,
+        s.visit_date,
+        s.source as utm_source,
+        s.medium as utm_medium,
+        s.campaign as utm_campaign,
+        row_number()
+            over (
+                partition by s.visitor_id
+                order by s.visit_date desc
+            )
+        as visit_rank
+    from sessions as s
+    where
+        s.medium in (
+            'cpc', 'cpm', 'cpa', 'youtube', 'cpp', 'tg', 'social', 'organic'
+        )
+),
+
+lpc as (
+    select
+        q.visitor_id,
+        q.utm_source,
+        q.utm_medium,
+        q.utm_campaign,
+        l.lead_id,
+        l.amount,
+        l.closing_reason,
+        l.status_id,
+        to_char(q.visit_date, 'DD-MM-YYYY') as visit_date,
+        to_char(l.created_at, 'DD-MM-YYYY') as created_at
+    from query as q
+    left join leads as l
+        on
+            q.visitor_id = l.visitor_id
+            and q.visit_date <= l.created_at
+    where q.visit_rank = 1
+    order by
+        l.amount desc nulls last,
+        q.visit_date asc,
+        q.utm_source asc,
+        q.utm_medium asc,
+        q.utm_campaign asc
+),
+
+organic as (
+    select
+        visit_date,
+        count(distinct visitor_id) as organic_visitors_count
+    from lpc
+    where utm_medium = 'organic'
+    group by visit_date
+),
+
+campaign as (
+    select
+        visit_date,
+        count(distinct visitor_id) as campaign_visitors_count
+    from lpc
+    where utm_medium != 'organic'
+    group by visit_date
+)
+
+select
+    o.visit_date,
+    o.organic_visitors_count,
+    c.campaign_visitors_count
+from organic as o
+inner join campaign as c
+    on o.visit_date = c.visit_date;
