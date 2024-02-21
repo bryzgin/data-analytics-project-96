@@ -396,29 +396,29 @@ ads as (
     group by
         ya.utm_source,
         ya.utm_medium,
-        ya.utm_campaign
+        ya.utm_campaign,
         to_char(ya.campaign_date, 'DD-MM-YYYY')
 ),
 
 calc as (
     select
         lpc.visit_date,
-	lpc.utm_source,
-	lpc.utm_medium,
-	lpc.utm_campaign,
-	count(distinct lpc.visitor_id) as visitors_count,
-	count(distinct lpc.lead_id) as leads_count,
-	count(distinct lpc.lead_id) filter (
-	    where lpc.closing_reason = 'Успешно реализовано'
-	        or lpc.status_id = 142
-		) as purchases_count,
-		sum(lpc.amount) as revenue
-	from last_paid_click as lpc
-	group by
-		lpc.visit_date,
-		lpc.utm_source,
-		lpc.utm_medium,
-		lpc.utm_campaign
+        lpc.utm_source,
+        lpc.utm_medium,
+        lpc.utm_campaign,
+        count(distinct lpc.visitor_id) as visitors_count,
+        count(distinct lpc.lead_id) as leads_count,
+        count(distinct lpc.lead_id) filter (
+            where lpc.closing_reason = 'Успешно реализовано'
+            or lpc.status_id = 142
+        ) as purchases_count,
+        sum(lpc.amount) as revenue
+    from last_paid_click as lpc
+    group by
+        lpc.visit_date,
+        lpc.utm_source,
+        lpc.utm_medium,
+        lpc.utm_campaign
 ),
 
 metrics as (
