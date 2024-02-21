@@ -270,3 +270,61 @@ select
 from organic as o
 inner join campaign as c
     on o.visit_date = c.visit_date;
+
+/* Интервал закрытия 90% лидов */
+with query as (
+    select
+        s.visitor_id,
+        s.visit_date,
+        s.source as utm_source,
+        s.medium as utm_medium,
+        s.campaign as utm_campaign,
+        row_number()
+            over (
+                partition by s.visitor_id
+                order by s.visit_date desc
+            )
+        as visit_rank
+    from sessions as s
+    where s.medium in ('cpc', 'cpm', 'cpa', 'youtube', 'cpp', 'tg', 'social')
+),
+
+lpc as (
+    select
+        q.visitor_id,
+        q.visit_date,
+        q.utm_source,
+        q.utm_medium,
+        q.utm_campaign,
+        l.lead_id,
+        l.created_at,
+        l.amount,
+        l.closing_reason,
+        l.status_id,
+        date_part('day', l.created_at - q.visit_date) as days_diff
+    from query as q
+    left join leads as l
+        on
+            q.visitor_id = l.visitor_id
+            and q.visit_date <= l.created_at
+    where q.visit_rank = 1
+    order by
+        l.amount desc nulls last,
+        q.visit_date asc,
+        q.utm_source asc,
+        q.utm_medium asc,
+        q.utm_campaign asc
+)
+
+select
+    lpc.lead_id,
+    lpc.days_diff,
+    to_char(lpc.visit_date, 'DD-MM-YYYY') as visit_date,
+    to_char(lpc.created_at, 'DD-MM-YYYY') as created_at,
+    ntile(10) over (
+        partition by lpc.days_diff order by lpc.days_diff
+    ) as closing_ntile
+from lpc
+where
+    lpc.closing_reason = 'Успешно реализовано'
+    or lpc.status_id = 142;
