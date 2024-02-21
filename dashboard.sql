@@ -422,28 +422,28 @@ calc as (
 ),
 
 metrics as (
-	select
-		c.utm_source,
-		c.utm_medium,
-		c.utm_campaign,
-		c.visitors_count,
-		a.total_cost,
-		c.leads_count,
-		c.purchases_count,
-		c.revenue
-	from calc as c
-	left join ads as a
-		on 
-			c.visit_date = a.campaign_date
-			and c.utm_source = a.utm_source
-			and c.utm_medium = a.utm_medium
-			and c.utm_campaign = a.utm_campaign
-	order by 
-		c.revenue desc nulls last,
-		c.visitors_count desc,
-		c.utm_source asc,
-		c.utm_medium asc,
-		c.utm_campaign asc
+    select
+        c.utm_source,
+        c.utm_medium,
+        c.utm_campaign,
+        c.visitors_count,
+        a.total_cost,
+        c.leads_count,
+        c.purchases_count,
+        c.revenue
+    from calc as c
+    left join ads as a
+        on 
+            c.visit_date = a.campaign_date
+            and c.utm_source = a.utm_source
+            and c.utm_medium = a.utm_medium
+            and c.utm_campaign = a.utm_campaign
+    order by 
+        c.revenue desc nulls last,
+        c.visitors_count desc,
+        c.utm_source asc,
+        c.utm_medium asc,
+        c.utm_campaign asc
 ),
 
 agg_metrics as (
