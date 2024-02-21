@@ -433,12 +433,12 @@ metrics as (
         c.revenue
     from calc as c
     left join ads as a
-        on 
+        on
             c.visit_date = a.campaign_date
             and c.utm_source = a.utm_source
             and c.utm_medium = a.utm_medium
             and c.utm_campaign = a.utm_campaign
-    order by 
+    order by
         c.revenue desc nulls last,
         c.visitors_count desc,
         c.utm_source asc,
@@ -447,13 +447,13 @@ metrics as (
 ),
 
 agg_metrics as (
-select
-	utm_source,
-	sum(visitors_count) as visitors_count,
-	sum(leads_count) as leads_count,
-	sum(purchases_count) as purchases_count,
-	sum(total_cost) as total_cost,
-	sum(revenue) as revenue
+    select
+        utm_source,
+        sum(visitors_count) as visitors_count,
+        sum(leads_count) as leads_count,
+        sum(purchases_count) as purchases_count,
+        sum(total_cost) as total_cost,
+        sum(revenue) as revenue
 from metrics
 where utm_source = 'yandex' or utm_source = 'vk'
 group by 
