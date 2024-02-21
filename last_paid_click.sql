@@ -1,4 +1,3 @@
-/* Формирование last_paid_click */
 with query as (
     select
         s.visitor_id,
@@ -18,12 +17,12 @@ with query as (
 
 select
     q.visitor_id,
-   	q.visit_date as visit_date,
+    q.visit_date as visit_date,
     q.utm_source,
     q.utm_medium,
     q.utm_campaign,
     l.lead_id,
-  	l.created_at as created_at,
+    l.created_at as created_at,
     l.amount,
     l.closing_reason,
     l.status_id
