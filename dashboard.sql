@@ -454,10 +454,10 @@ agg_metrics as (
         sum(purchases_count) as purchases_count,
         sum(total_cost) as total_cost,
         sum(revenue) as revenue
-from metrics
-where utm_source = 'yandex' or utm_source = 'vk'
-group by 
-	utm_source
+    from metrics
+    where utm_source = 'yandex' or utm_source = 'vk'
+    group by
+        utm_source
 )
 
 select
@@ -470,5 +470,5 @@ select
 	round(total_cost / visitors_count) as cpu,
 	round(total_cost / leads_count) as cpl,
 	round(total_cost / purchases_count) as cppu,
-	round(((revenue - total_cost) / total_cost * 100))
+	round(((revenue - total_cost) / total_cost * 100)) as roi
 from agg_metrics;
