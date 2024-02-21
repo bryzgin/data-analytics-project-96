@@ -333,71 +333,71 @@ where
 with query as (
     select
         s.visitor_id,
-       	s.visit_date,
+        s.visit_date,
         s.source as utm_source,
         s.medium as utm_medium,
         s.campaign as utm_campaign,
         row_number()
-            over (
-                partition by s.visitor_id
-                order by s.visit_date desc
-            )
+        over (
+            partition by s.visitor_id
+            order by s.visit_date desc
+        )
         as visit_rank
     from sessions as s
     where s.medium in ('cpc', 'cpm', 'cpa', 'youtube', 'cpp', 'tg', 'social')
 ),
 
-last_paid_click as (	
-	select
-	    q.visitor_id,
-	    to_char(q.visit_date, 'DD-MM-YYYY') as visit_date,
-	    q.utm_source,
-	    q.utm_medium,
-	    q.utm_campaign,
-	    l.lead_id,
-	    l.amount,
-	    l.closing_reason,
-	    l.status_id
-	from query as q
-	left join leads as l
-	    on
-	        q.visitor_id = l.visitor_id
-	        and q.visit_date <= l.created_at
-	where q.visit_rank = 1
-	order by
-	    l.amount desc nulls last,
-	    q.visit_date asc,
-	    q.utm_source asc,
-	    q.utm_medium asc,
-	    q.utm_campaign asc
+last_paid_click as (
+    select
+        q.visitor_id,
+	q.utm_source,
+	q.utm_medium,
+	q.utm_campaign,
+	l.lead_id,
+	l.amount,
+	l.closing_reason,
+	l.status_id,
+	to_char(q.visit_date, 'DD-MM-YYYY') as visit_date,
+    from query as q
+    left join leads as l
+        on
+            q.visitor_id = l.visitor_id
+            and q.visit_date <= l.created_at
+    where q.visit_rank = 1
+    order by
+        l.amount desc nulls last,
+	q.visit_date asc,
+	q.utm_source asc,
+	q.utm_medium asc,
+	q.utm_campaign asc
 ),
 
 ads as (
 	select
-		to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date,
 		vk.utm_source,
 		vk.utm_medium,
 		vk.utm_campaign,
-		sum(vk.daily_spent) as total_cost
+		sum(vk.daily_spent) as total_cost,
+		to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date
 	from vk_ads as vk
 	group by 
-		to_char(vk.campaign_date, 'DD-MM-YYYY'),
 		vk.utm_source,
 		vk.utm_medium,
-		vk.utm_campaign
+		vk.utm_campaign,
+		to_char(vk.campaign_date, 'DD-MM-YYYY')
 	union
 		select
-		to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
 		ya.utm_source,
 		ya.utm_medium,
 		ya.utm_campaign,
-		sum(ya.daily_spent) as total_cost
+		sum(ya.daily_spent) as total_cost,
+		to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
 	from ya_ads as ya
 	group by 
-		to_char(ya.campaign_date, 'DD-MM-YYYY'),
 		ya.utm_source,
 		ya.utm_medium,
 		ya.utm_campaign
+		to_char(ya.campaign_date, 'DD-MM-YYYY')
 ),
 
 calc as (
