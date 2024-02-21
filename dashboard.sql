@@ -96,46 +96,6 @@ select
 from click_to_lead;
 
 /* Конверсия из лида в оплату */
-with ads as (
-    select
-        to_char(vk.campaign_date, 'DD-MM-YYYY') as campaign_date,
-        vk.utm_source,
-        vk.utm_medium,
-        vk.utm_campaign,
-        sum(vk.daily_spent) as total_cost
-    from vk_ads as vk
-    group by
-        to_char(vk.campaign_date, 'DD-MM-YYYY'),
-        vk.utm_source,
-        vk.utm_medium,
-        vk.utm_campaign
-    union
-    select
-        to_char(ya.campaign_date, 'DD-MM-YYYY') as campaign_date,
-        ya.utm_source,
-        ya.utm_medium,
-        ya.utm_campaign,
-        sum(ya.daily_spent) as total_cost
-    from ya_ads as ya
-    group by
-        to_char(ya.campaign_date, 'DD-MM-YYYY'),
-        ya.utm_source,
-        ya.utm_medium,
-        ya.utm_campaign
-)
-
-select
-    utm_source,
-    campaign_date,
-    sum(total_cost) as total_cost
-from ads
-group by
-    campaign_date,
-    utm_source
-order by
-    utm_source,
-    campaign_date;
-
 with query as (
     select
         s.visitor_id,
@@ -179,15 +139,20 @@ lpc as (
         q.utm_campaign asc
 ),
 
-click_to_lead as (
+lead_to_purchase as (
     select
-        cast(count(distinct visitor_id) as numeric) as visits_count,
-        cast(count(distinct lead_id) as numeric) as leads_count
+        cast(count(distinct lpc.lead_id) as numeric) as leads_count,
+        cast(
+            count(distinct lpc.lead_id) filter (
+                where lpc.closing_reason = 'Успешно реализовано'
+                or lpc.status_id = 142
+            ) as numeric
+        ) as purchases_count
     from lpc
 )
 
 select
-    visits_count,
     leads_count,
-    round(leads_count / visits_count * 100, 2) as conv
-from click_to_lead;
+    purchases_count,
+    round(purchases_count / leads_count * 100, 2) as conv
+from lead_to_purchase;
